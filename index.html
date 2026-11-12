@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>بيانات الأسرة الكنسية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+:root{--night:#14233f;--night2:#1e3560;--gold:#c9a227;--gold-soft:#f3e7b8;--paper:#f6f4ee;--card:#fff;--ink:#1c2233;--mute:#6b7285;--line:#dcd8cb;--ok:#1f7a4d;--err:#b3261e}
+@media (prefers-color-scheme:dark){:root{--paper:#0e1627;--card:#17233b;--ink:#eef0f6;--mute:#9aa4bd;--line:#2c3b5c;--gold-soft:#3a3318}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Cairo","Segoe UI",Tahoma,sans-serif;line-height:1.65}
+header{background:var(--night);color:#fff;text-align:center;padding:26px 16px 62px;border-bottom:4px solid var(--gold)}
+header svg{width:46px;height:46px}
+header h1{font-family:"Amiri",serif;font-size:30px;margin:6px 0 2px;color:var(--gold)}
+header p{margin:0;font-size:14px;opacity:.85}
+main{max-width:680px;margin:-38px auto 40px;padding:0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+.bar{display:flex;gap:6px;margin-bottom:6px}
+.bar i{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.bar i.on{background:var(--gold)}
+.where{font-size:13px;color:var(--mute);margin-bottom:14px}
+h2{font-family:"Amiri",serif;font-size:24px;margin:0 0 4px;color:var(--night2)}
+@media (prefers-color-scheme:dark){h2{color:var(--gold)}}
+.hint{font-size:13px;color:var(--mute);margin:0 0 16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.full{grid-column:1/-1}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:3px}
+.req{color:var(--err)}
+input,textarea{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);font:inherit}
+input:focus,textarea:focus{outline:3px solid var(--gold-soft);border-color:var(--gold)}
+input.bad,textarea.bad{border-color:var(--err)}
+.row{display:flex;gap:10px;margin-top:20px}
+button{font:inherit;font-weight:700;padding:12px;border-radius:10px;border:0;cursor:pointer;flex:1}
+.go{background:var(--night);color:#fff}
+.go:focus-visible,.alt:focus-visible{outline:3px solid var(--gold)}
+.alt{background:transparent;color:var(--night2);border:1.5px solid var(--line);flex:.5}
+@media (prefers-color-scheme:dark){.go{background:var(--gold);color:#14233f}.alt{color:var(--ink)}}
+button:disabled{opacity:.5}
+.kid{border:1.5px solid var(--gold);border-radius:12px;padding:14px;margin-bottom:12px;background:var(--gold-soft)}
+.kid h3{margin:0 0 10px;font-size:15px;display:flex;justify-content:space-between;color:#14233f}
+@media (prefers-color-scheme:dark){.kid h3{color:var(--gold)}}
+.kid h3 button{flex:none;background:none;color:var(--err);padding:0;font-size:13px}
+.kid label{color:#14233f}
+@media (prefers-color-scheme:dark){.kid label{color:var(--ink)}}
+.chk{display:flex;gap:8px;align-items:center;margin-bottom:14px;font-weight:400}
+.chk input{width:auto}
+.msg{min-height:20px;margin-top:10px;font-size:14px;color:var(--err)}
+.warn{background:#fff4e0;color:#7a4b00;border:1px solid #f0c36a;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:14px}
+.thanks{text-align:center;padding:24px 6px}
+.thanks .tick{width:64px;height:64px;border-radius:50%;background:var(--ok);color:#fff;font-size:34px;display:grid;place-items:center;margin:0 auto 12px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<header>
+<svg viewBox="0 0 48 48" fill="none" stroke="#c9a227" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M24 5v38M5 24h38"/><path d="M19 5h10M19 43h10M5 19v10M43 19v10" stroke-width="2.5"/><circle cx="24" cy="24" r="5" fill="#c9a227"/></svg>
+<h1>بيانات الأسرة الكنسية</h1>
+<p>استمارة واحدة لكل أسرة، وتستغرق دقائق قليلة</p>
+</header>
+<main>
+<div class="card" id="card">
+<div class="warn hide" id="warn">لم يتم ضبط رابط النموذج بعد. افتح الملف وعدّل قسم الإعدادات في أول الكود.</div>
+<div class="bar" id="bar"></div>
+<div class="where" id="where"></div>
+<div id="body"></div>
+<div class="msg" id="msg" role="alert"></div>
+<div class="row"><button class="alt" id="back">السابق</button><button class="go" id="next">التالي</button></div>
+</div>
+</main>
+
+<script>
+/* ============ الإعدادات: عدّل هذا القسم فقط ============ */
+const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdYXeRRew8z0PTQrxvd-0ES3UJrOirzvqAt4-1Yb2YF4YP01Q/formResponse";
+const ENTRY = {
+  headName:   "entry.873841038",  // اسم رب الأسرة
+  headBirth:  "entry.1103718097",  // تاريخ ميلاد رب الأسرة
+  headPhone:  "entry.2007199150",  // تليفون رب الأسرة
+  headQual:   "entry.628489953",  // مؤهل رب الأسرة
+  headJob:    "entry.843367073",  // وظيفة رب الأسرة
+  headConf:   "entry.1857104057",  // أب اعتراف رب الأسرة
+  address:    "entry.1921721421",  // العنوان
+  wife:       "entry.1848793649",  // بيانات الزوجة
+  children:   "entry.1192113548"   // بيانات الأبناء
+};
+/* ======================================================== */
+
+const F=[["name","الاسم الرباعي",1,"text"],["birth","تاريخ الميلاد",1,"date"],["phone","رقم التليفون",0,"tel"],["qual","المؤهل الدراسي",0,"text"],["job","الوظيفة",0,"text"],["conf","أب الاعتراف",0,"text"]];
+const TITLES=["رب الأسرة","الزوجة","الأبناء","العنوان"];
+const S={i:0,head:{},wife:{},noWife:false,kids:[],addr:""};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+if(FORM_URL.indexOf("http")!==0)$("warn").classList.remove("hide");
+
+function inputs(o,tag){return F.map(([k,l,r,t])=>`<div class="${k==="name"?"full":""}"><label>${l}${r?' <span class="req">*</span>':""}</label><input type="${t}" data-t="${tag}" data-k="${k}" value="${esc(o[k])}"></div>`).join("")}
+function draw(){
+ $("bar").innerHTML=TITLES.map((_,n)=>`<i class="${n<=S.i?"on":""}"></i>`).join("");
+ $("where").textContent=`الخطوة ${S.i+1} من 4: ${TITLES[S.i]}`;
+ let h="";
+ if(S.i===0)h=`<h2>بيانات رب الأسرة</h2><p class="hint">الحقول التي بجوارها <span class="req">*</span> مطلوبة.</p><div class="grid">${inputs(S.head,"head")}</div>`;
+ if(S.i===1)h=`<h2>بيانات الزوجة</h2><p class="hint">اتركها فارغة إن لم تنطبق.</p><label class="chk"><input type="checkbox" id="nw" ${S.noWife?"checked":""}> لا توجد زوجة</label><div class="grid ${S.noWife?"hide":""}" id="wf">${inputs(S.wife,"wife")}</div>`;
+ if(S.i===2){h=`<h2>الأبناء</h2><p class="hint">أضف كل ابن أو ابنة. إن لم يوجد أبناء اضغط «التالي».</p>`;
+  h+=S.kids.map((k,n)=>`<div class="kid"><h3>الابن / الابنة ${n+1}<button data-rm="${n}">حذف</button></h3><div class="grid">${inputs(k,"k"+n)}</div></div>`).join("");
+  h+=`<button class="go" id="add" style="width:100%">+ إضافة ابن / ابنة</button>`}
+ if(S.i===3)h=`<h2>عنوان الأسرة</h2><p class="hint">اكتب العنوان بالتفصيل ليسهل الافتقاد.</p><label>العنوان <span class="req">*</span></label><textarea id="addr" rows="3">${esc(S.addr)}</textarea>`;
+ $("body").innerHTML=h;$("msg").textContent="";
+ $("back").style.visibility=S.i?"visible":"hidden";
+ $("next").textContent=S.i===3?"إرسال البيانات":"التالي";
+ if($("nw"))$("nw").onchange=e=>{S.noWife=e.target.checked;$("wf").classList.toggle("hide",S.noWife)};
+ if($("add"))$("add").onclick=()=>{read();S.kids.push({});draw()};
+ document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{read();S.kids.splice(+b.dataset.rm,1);draw()});
+}
+function read(){
+ document.querySelectorAll("input[data-t]").forEach(e=>{const t=e.dataset.t;const o=t==="head"?S.head:t==="wife"?S.wife:S.kids[+t.slice(1)];if(o)o[e.dataset.k]=e.value.trim()});
+ if($("addr"))S.addr=$("addr").value.trim();
+}
+function check(tag){let ok=true;document.querySelectorAll(`[data-t="${tag}"]`).forEach(e=>{const r=F.find(f=>f[0]===e.dataset.k)[2];const bad=r&&!e.value.trim();e.classList.toggle("bad",bad);if(bad)ok=false});return ok}
+function valid(){
+ if(S.i===0)return check("head");
+ if(S.i===1)return S.noWife||check("wife");
+ if(S.i===2)return S.kids.every((_,n)=>check("k"+n));
+ const bad=!S.addr;$("addr").classList.toggle("bad",bad);return !bad;
+}
+const line=p=>[p.name,p.birth,p.phone||"-",p.qual||"-",p.job||"-",p.conf||"-"].join(" | ");
+$("back").onclick=()=>{read();S.i--;draw()};
+$("next").onclick=async()=>{
+ read();
+ if(!valid()){$("msg").textContent="أكمل الحقول المطلوبة المحددة بالأحمر.";return}
+ if(S.i<3){S.i++;draw();scrollTo(0,0);return}
+ if(FORM_URL.indexOf("http")!==0){$("msg").textContent="لم يتم ضبط رابط النموذج في الإعدادات.";return}
+ $("next").disabled=true;$("next").textContent="جارٍ الإرسال...";
+ const d=new URLSearchParams();
+ d.append(ENTRY.headName,S.head.name);d.append(ENTRY.headBirth,S.head.birth);
+ d.append(ENTRY.headPhone,S.head.phone||"-");d.append(ENTRY.headQual,S.head.qual||"-");d.append(ENTRY.headJob,S.head.job||"-");d.append(ENTRY.headConf,S.head.conf||"-");
+ d.append(ENTRY.address,S.addr);
+ d.append(ENTRY.wife,S.noWife||!S.wife.name?"لا توجد":line(S.wife));
+ d.append(ENTRY.children,S.kids.length?S.kids.map(line).join("\n"):"لا يوجد");
+ try{
+  await fetch(FORM_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:d});
+  $("card").innerHTML=`<div class="thanks"><div class="tick">✓</div><h2>تم استلام بيانات الأسرة</h2><p class="hint">شكرًا لكم، ويبارك الرب بيوتكم.</p></div>`;
+ }catch(e){
+  $("next").disabled=false;$("next").textContent="إرسال البيانات";
+  $("msg").textContent="تعذر الإرسال. تأكد من الاتصال بالإنترنت وحاول مرة أخرى.";
+ }
+};
+draw();
+</script>
+</body>
+</html>
